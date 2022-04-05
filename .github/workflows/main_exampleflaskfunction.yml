@@ -65,6 +65,6 @@ jobs:
           app-name: 'exampleflaskfunction'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_05A90B1DE4FD4AE3B4B038551974989E }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BCF7CDC1D3534C779ECB679CB395CDDE }}
           scm-do-build-during-deployment: true
           enable-oryx-build: true
