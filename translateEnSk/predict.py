@@ -35,10 +35,10 @@ def _initialize():
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
         if need_save:
-            model.save_pretrained("saved")
-            tokenizer.save_pretrained("saved")
+            model.save_pretrained("./saved")
+            tokenizer.save_pretrained("./saved")
 
-        nltk.download('punkt')
+        nltk.download('punkt',download_dir="./saved")
 
         # dynamic quantization for faster CPU inference
         model.to('cpu')
