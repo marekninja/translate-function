@@ -9,7 +9,7 @@ import torch
 scriptpath = os.path.abspath(__file__)
 scriptdir = os.path.dirname(scriptpath)
 
-model_name = "./translateEnSk/saved/"
+model_name = "Helsinki-NLP/opus-mt-en-sk"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
@@ -25,7 +25,7 @@ def _initialize():
     global model
     if tokenizer is None or model is None:
         
-        # model_name = "Helsinki-NLP/opus-mt-en-sk"
+        model_name = "Helsinki-NLP/opus-mt-en-sk"
         # need_save = True
         # if os.path.isdir("./translateEnSk/saved/"):
         #     model_name = "./translateEnSk/saved/"
