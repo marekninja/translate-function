@@ -19,25 +19,26 @@ model = None
 
 
 def _initialize():
+    nltk.download('punkt')
+
     global tokenizer
     global model
     if tokenizer is None or model is None:
         
-        model_name = "Helsinki-NLP/opus-mt-en-sk"
-        need_save = True
-        if os.path.isdir("./translateEnSk/saved/"):
-            model_name = "./translateEnSk/saved/"
-            need_save = False
-
+        # model_name = "Helsinki-NLP/opus-mt-en-sk"
+        # need_save = True
+        # if os.path.isdir("./translateEnSk/saved/"):
+        #     model_name = "./translateEnSk/saved/"
+        #     need_save = False
 
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-        if need_save:
-            model.save_pretrained("./translateEnSk/saved/")
-            tokenizer.save_pretrained("./translateEnSk/saved/")
+        # if need_save:
+        #     model.save_pretrained("./translateEnSk/saved/")
+        #     tokenizer.save_pretrained("./translateEnSk/saved/")
 
-        nltk.download('punkt',download_dir="./translateEnSk/saved/")
+        
 
         # dynamic quantization for faster CPU inference
         model.to('cpu')
