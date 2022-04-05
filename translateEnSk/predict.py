@@ -9,14 +9,13 @@ import torch
 scriptpath = os.path.abspath(__file__)
 scriptdir = os.path.dirname(scriptpath)
 
-model_name = "./saved"
+model_name = "./translateEnSk/saved/"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
 
 tokenizer = None
 model = None
-
 
 
 def _initialize():
@@ -26,8 +25,8 @@ def _initialize():
         
         model_name = "Helsinki-NLP/opus-mt-en-sk"
         need_save = True
-        if os.path.isdir("./saved"):
-            model_name = "./saved"
+        if os.path.isdir("./translateEnSk/saved/"):
+            model_name = "./translateEnSk/saved/"
             need_save = False
 
 
@@ -35,10 +34,10 @@ def _initialize():
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
         if need_save:
-            model.save_pretrained("./saved")
-            tokenizer.save_pretrained("./saved")
+            model.save_pretrained("./translateEnSk/saved/")
+            tokenizer.save_pretrained("./translateEnSk/saved/")
 
-        nltk.download('punkt',download_dir="./saved")
+        nltk.download('punkt',download_dir="./translateEnSk/saved/")
 
         # dynamic quantization for faster CPU inference
         model.to('cpu')
