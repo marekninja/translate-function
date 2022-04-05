@@ -1,0 +1,9 @@
+# Do not include azure-functions-worker as it may conflict with the Azure Functions platform
+
+azure-functions
+transformers[torch]
+numpy
+requests
+sentencepiece
+nltk
+torch
