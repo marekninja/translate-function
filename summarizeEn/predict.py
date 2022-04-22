@@ -43,8 +43,8 @@ def _initialize():
 
         # dynamic quantization for faster CPU inference
         model.to('cpu')
-        torch.backends.quantized.engine = 'qnnpack'
-        # torch.backends.quantized.engine = 'fbgemm'
+        # torch.backends.quantized.engine = 'qnnpack' # ARM
+        torch.backends.quantized.engine = 'fbgemm' # x86
         model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8, inplace=False)
 
 
