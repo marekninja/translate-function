@@ -10,7 +10,7 @@ scriptpath = os.path.abspath(__file__)
 scriptdir = os.path.dirname(scriptpath)
 
 # model_name ="cnicu/t5-small-booksum"
-model_name ="sshleifer/distilbart-cnn-12-6"
+model_name ="sshleifer/distilbart-xsum-12-1"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
