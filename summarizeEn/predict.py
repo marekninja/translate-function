@@ -27,6 +27,7 @@ def _initialize():
     global model
     if tokenizer is None or model is None:
         
+        _log_msg("Initializing model and tokenizer.")
         # model_name = "Helsinki-NLP/opus-mt-en-sk"
         # need_save = True
         # if os.path.isdir("./translateEnSk/saved/"):
@@ -41,59 +42,82 @@ def _initialize():
         #     tokenizer.save_pretrained("./translateEnSk/saved/")
 
         
-
+        _log_msg("Dynamic quantization of model.")
         # dynamic quantization for faster CPU inference
         model.to('cpu')
         # torch.backends.quantized.engine = 'qnnpack' # ARM
         torch.backends.quantized.engine = 'fbgemm' # x86
         model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8, inplace=False)
 
-
-def _log_msg(msg):
-    logging.info("{}: {}".format(datetime.now(),msg))
-
-# def preprocess(text):
-
-#     resulting = [text]
-#     if len(text) > model.config.max_position_embeddings:
-#         resulting = []
-#         sentences = nltk.sent_tokenize(text)
+        _log_msg("Model ready!")
 
 
-#         for i in range(len(sentences)):
+def _log_msg(msg, debug=False):
+    message = "{}: {}".format(datetime.now(),msg)
+
+    if debug:
+       logging.debug(message) 
+       return
+
+    logging.info(message)
+
+def preprocess(text):
+
+    paragraph_list = [text]
+    if len(text) > model.config.encoder.max_position_embeddings:
+        paragraph_list = []
+        
+        paragraph = ""
+        sentences = nltk.sent_tokenize(text)
+        
+        for i in range(len(sentences)):
+
+            new_len = len(paragraph) + len(sentences[i])
+
+            if new_len < model.config.encoder.max_position_embeddings:
+                paragraph += " " + sentences[i]
+            else:
+                paragraph_list.append(paragraph)
+                paragraph = ""
         
 
-#     return resulting
+    return paragraph_list
 
 
 def translate(text: str):
 
     _initialize()
 
-    print("Text length:",len(text))
+    _log_msg("Text length:" + str(len(text)), True)
 
-    # sentences = preprocess(text=text)
-    sentences = text
+    sentences = preprocess(text=text)
+    # sentences = text
 
-    print(model.config)
+    # print(model.config)
     # print(sentences)
 
-    tok = tokenizer(sentences, return_tensors="pt",padding=True)
-    translated = model.generate(**tok)
+    output = []
+    for sentence in sentences:
+        tok = tokenizer(sentence, return_tensors="pt",padding=True)
+        translated  = model.generate(**tok)
 
-    translated = " ".join([tokenizer.decode(t, skip_special_tokens=True) for t in translated])
+        res = " ".join([tokenizer.decode(t, skip_special_tokens=True) for t in translated])
+        output.append(res)
     # print(translated)
+    
+    output = " ".join(output)
 
-    print("Translated length",len(translated))
+    _log_msg("Translated length: " + str(len(output)), True)
+    # print("Translated length",len(output))
 
     response = {
                 'created': datetime.utcnow().isoformat(),
-                'output': translated 
+                'output': output 
             }
 
-    print(response)
+    # print(response)
 
-    _log_msg("Results: " + str(response))
+    _log_msg("Results: " + str(response), True)
     return response
 
 
