@@ -9,8 +9,8 @@ import torch
 scriptpath = os.path.abspath(__file__)
 scriptdir = os.path.dirname(scriptpath)
 
-# model_name = "Helsinki-NLP/opus-mt-en-sk"
-model_name = "translateEnSk/saved/"
+model_name = "Helsinki-NLP/opus-mt-en-sk"
+# model_name = "translateEnSk/saved/"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
@@ -28,8 +28,9 @@ def _initialize():
         
         _log_msg("Initializing model and tokenizer.")
 
-        tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=True)
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, local_files_only=True)
+        # local_files_only=True
+        tokenizer = AutoTokenizer.from_pretrained(model_name, force_download=True)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, force_download=True)
 
         # model.save_pretrained("./translateEnSk/saved/")
         # tokenizer.save_pretrained("./translateEnSk/saved/")

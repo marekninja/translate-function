@@ -11,8 +11,8 @@ scriptdir = os.path.dirname(scriptpath)
 
 # model_name ="cnicu/t5-small-booksum"
 # model = AutoModelForSeq2SeqLM.from_pretrained("Miranda/t5-small-train")
-# model_name ="sshleifer/distilbart-xsum-12-1"
-model_name ="summarizeEn/saved"
+model_name ="sshleifer/distilbart-xsum-12-1"
+# model_name ="summarizeEn/saved"
 # model_name = "mrm8488/bert-small2bert-small-finetuned-cnn_daily_mail-summarization"
 
 output_layer = 'loss:0'
@@ -31,8 +31,9 @@ def _initialize():
         
         _log_msg("Initializing model and tokenizer.")
 
-        tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=True)
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, local_files_only=True)
+        # local_files_only=True
+        tokenizer = AutoTokenizer.from_pretrained(model_name, force_download=True)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, force_download=True)
         
         # model.save_pretrained("./summarizeEn/saved/")
         # tokenizer.save_pretrained("./summarizeEn/saved/")
