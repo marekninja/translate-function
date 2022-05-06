@@ -9,7 +9,8 @@ import torch
 scriptpath = os.path.abspath(__file__)
 scriptdir = os.path.dirname(scriptpath)
 
-model_name = "Helsinki-NLP/opus-mt-en-sk"
+# model_name = "Helsinki-NLP/opus-mt-en-sk"
+model_name = "translateEnSk/saved/"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
@@ -26,25 +27,19 @@ def _initialize():
     if tokenizer is None or model is None:
         
         _log_msg("Initializing model and tokenizer.")
-        # model_name = "Helsinki-NLP/opus-mt-en-sk"
-        # need_save = True
-        # if os.path.isdir("./translateEnSk/saved/"):
-        #     model_name = "./translateEnSk/saved/"
-        #     need_save = False
 
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-        # if need_save:
-        #     model.save_pretrained("./translateEnSk/saved/")
-        #     tokenizer.save_pretrained("./translateEnSk/saved/")
+        # model.save_pretrained("./translateEnSk/saved/")
+        # tokenizer.save_pretrained("./translateEnSk/saved/")
 
         
         _log_msg("Dynamic quantization of model.")
         # dynamic quantization for faster CPU inference
         model.to('cpu')
-        # torch.backends.quantized.engine = 'qnnpack' # ARM
-        torch.backends.quantized.engine = 'fbgemm' # x86
+        torch.backends.quantized.engine = 'qnnpack' # ARM
+        # torch.backends.quantized.engine = 'fbgemm' # x86
         model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8, inplace=False)
 
         _log_msg("Model ready!")

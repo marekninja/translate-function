@@ -10,8 +10,10 @@ scriptpath = os.path.abspath(__file__)
 scriptdir = os.path.dirname(scriptpath)
 
 # model_name ="cnicu/t5-small-booksum"
+# model = AutoModelForSeq2SeqLM.from_pretrained("Miranda/t5-small-train")
 # model_name ="sshleifer/distilbart-xsum-12-1"
-model_name = "mrm8488/bert-small2bert-small-finetuned-cnn_daily_mail-summarization"
+model_name ="summarizeEn/saved"
+# model_name = "mrm8488/bert-small2bert-small-finetuned-cnn_daily_mail-summarization"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
@@ -28,25 +30,20 @@ def _initialize():
     if tokenizer is None or model is None:
         
         _log_msg("Initializing model and tokenizer.")
-        # model_name = "Helsinki-NLP/opus-mt-en-sk"
-        # need_save = True
-        # if os.path.isdir("./translateEnSk/saved/"):
-        #     model_name = "./translateEnSk/saved/"
-        #     need_save = False
 
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-
-        # if need_save:
-        #     model.save_pretrained("./translateEnSk/saved/")
-        #     tokenizer.save_pretrained("./translateEnSk/saved/")
+        
+        # model.save_pretrained("./summarizeEn/saved/")
+        # tokenizer.save_pretrained("./summarizeEn/saved/")
+            
 
         
         _log_msg("Dynamic quantization of model.")
         # dynamic quantization for faster CPU inference
         model.to('cpu')
-        # torch.backends.quantized.engine = 'qnnpack' # ARM
-        torch.backends.quantized.engine = 'fbgemm' # x86
+        torch.backends.quantized.engine = 'qnnpack' # ARM
+        # torch.backends.quantized.engine = 'fbgemm' # x86
         model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8, inplace=False)
 
         _log_msg("Model ready!")
@@ -64,7 +61,8 @@ def _log_msg(msg, debug=False):
 def preprocess(text):
 
     paragraph_list = [text]
-    if len(text) > model.config.encoder.max_position_embeddings:
+    # if len(text) > model.config.encoder.max_position_embeddings:
+    if len(text) > 512:
         paragraph_list = []
         
         paragraph = ""
@@ -72,9 +70,9 @@ def preprocess(text):
         
         for i in range(len(sentences)):
 
-            new_len = len(paragraph) + len(sentences[i])
+            new_len = len(paragraph.split()) + len(sentences[i].split())
 
-            if new_len < model.config.encoder.max_position_embeddings:
+            if new_len < 512:
                 paragraph += " " + sentences[i]
             else:
                 paragraph_list.append(paragraph)
@@ -89,11 +87,13 @@ def translate(text: str):
     _initialize()
 
     _log_msg("Text length:" + str(len(text)), True)
+    
+    print(model.config)
 
     sentences = preprocess(text=text)
     # sentences = text
 
-    # print(model.config)
+    
     # print(sentences)
 
     output = []
@@ -115,7 +115,7 @@ def translate(text: str):
                 'output': output 
             }
 
-    # print(response)
+    print(response)
 
     _log_msg("Results: " + str(response), True)
     return response
