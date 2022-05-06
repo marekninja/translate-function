@@ -31,8 +31,8 @@ def _initialize():
         
         _log_msg("Initializing model and tokenizer.")
 
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=True)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, local_files_only=True)
         
         # model.save_pretrained("./summarizeEn/saved/")
         # tokenizer.save_pretrained("./summarizeEn/saved/")
