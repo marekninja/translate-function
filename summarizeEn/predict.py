@@ -11,9 +11,9 @@ scriptdir = os.path.dirname(scriptpath)
 
 # model_name ="cnicu/t5-small-booksum"
 # model = AutoModelForSeq2SeqLM.from_pretrained("Miranda/t5-small-train")
-model_name ="sshleifer/distilbart-xsum-12-1"
+# model_name ="sshleifer/distilbart-xsum-12-1"
 # model_name ="summarizeEn/saved"
-# model_name = "mrm8488/bert-small2bert-small-finetuned-cnn_daily_mail-summarization"
+model_name = "mrm8488/bert-small2bert-small-finetuned-cnn_daily_mail-summarization"
 
 output_layer = 'loss:0'
 input_node = 'Placeholder:0'
