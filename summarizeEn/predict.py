@@ -107,7 +107,7 @@ def translate(text: str):
     
     output = " ".join(output)
 
-    _log_msg("Translated length: " + str(len(output)), True)
+    _log_msg("Summarized length: " + str(len(output)), True)
     # print("Translated length",len(output))
 
     response = {

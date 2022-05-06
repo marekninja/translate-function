@@ -25,7 +25,8 @@ def _initialize():
     global model
     if tokenizer is None or model is None:
         
-        model_name = "Helsinki-NLP/opus-mt-en-sk"
+        _log_msg("Initializing model and tokenizer.")
+        # model_name = "Helsinki-NLP/opus-mt-en-sk"
         # need_save = True
         # if os.path.isdir("./translateEnSk/saved/"):
         #     model_name = "./translateEnSk/saved/"
@@ -39,16 +40,24 @@ def _initialize():
         #     tokenizer.save_pretrained("./translateEnSk/saved/")
 
         
-
+        _log_msg("Dynamic quantization of model.")
         # dynamic quantization for faster CPU inference
         model.to('cpu')
-        # torch.backends.quantized.engine = 'qnnpack' # for ARM
-        torch.backends.quantized.engine = 'fbgemm' # for x86
+        # torch.backends.quantized.engine = 'qnnpack' # ARM
+        torch.backends.quantized.engine = 'fbgemm' # x86
         model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8, inplace=False)
 
+        _log_msg("Model ready!")
 
-def _log_msg(msg):
-    logging.info("{}: {}".format(datetime.now(),msg))
+
+def _log_msg(msg, debug=False):
+    message = "{}: {}".format(datetime.now(),msg)
+
+    if debug:
+       logging.debug(message) 
+       return
+
+    logging.info(message)
 
 def preprocess(text):
     return nltk.sent_tokenize(text)
@@ -60,13 +69,14 @@ def translate(text: str):
 
     sentences = preprocess(text=text)
 
-    print(sentences)
+    _log_msg("Text length:" + str(len(text)), True)
 
     tok = tokenizer(sentences, return_tensors="pt",padding=True)
     translated = model.generate(**tok)
 
     translated = " ".join([tokenizer.decode(t, skip_special_tokens=True) for t in translated])
-    print(translated)
+    
+    _log_msg("Translated length: " + str(len(translated)), True)
 
     response = {
                 'created': datetime.utcnow().isoformat(),
